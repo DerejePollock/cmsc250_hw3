@@ -17,19 +17,15 @@
                <children>
                   <Label text="Enter your name:" />
                   <TextField fx:id="nameText" />
-                  <Button mnemonicParsing="false" onAction="#enterName" text="Register Player" />
+                  <Button mnemonicParsing="false" onAction="#registerPlayer" text="Register Player" />
                </children>
             </VBox>
       </content>
     </Tab>
     <Tab text="Matches">
-      <content>
-            <VBox>
-               <children>
-                  <ListView fx:id="matchesID" prefHeight="368.0" prefWidth="600.0" />
-               </children>
-            </VBox>
-      </content>
+         <content>
+            <ListView fx:id="namesListView" prefHeight="200.0" prefWidth="200.0" />
+         </content>
     </Tab>
       <Tab text="Leaderboard">
         <content>
