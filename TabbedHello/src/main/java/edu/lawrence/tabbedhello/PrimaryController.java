@@ -16,6 +16,11 @@ public class PrimaryController {
     @FXML private TextField nameText;
     @FXML private ListView<Match> matchesListView; // Assuming you have this in your FXML for active matches
     @FXML private ListView<Players> leaderboardListView; // Assuming you have this in your FXML for leaderboard
+    @FXML
+    
+    private void generateMatches() {
+    // Method implementation
+    }
     
 
     public void registerPlayer() {
@@ -61,6 +66,7 @@ public class PrimaryController {
         });
     }
     
+    
     private void showWinnerSelectionDialog(Match match) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Select Winner");
@@ -79,17 +85,44 @@ public class PrimaryController {
         });
     }
     
+    
     private void processMatchResult(Match match, Players winner) {
-        match.setStatus(Match.MatchStatus.COMPLETED);
-        winner.incrementGamesWon();
-        updateMatchesListView();
-        updateLeaderboard();
-    }
+    // Set the match status to COMPLETED
+    match.setStatus(Match.MatchStatus.COMPLETED);
 
+    // Increment the winner's win count and both players' played count
+    winner.incrementWon();
+    match.getPlayerOne().incrementPlayed();
+    match.getPlayerTwo().incrementPlayed();
+
+    // Remove the match from the active matches list
+    matches.removeIf(m -> m.getStatus() == Match.MatchStatus.COMPLETED);
+
+    // Update the ListView and leaderboard
+    updateMatchesListView();
+    updateLeaderboard();
+}
     public void updateLeaderboard() {
-        players.sort((p1, p2) -> p2.getWon() - p1.getWon());
-        leaderboardListView.getItems().setAll(players);
+    // Sort players by number of wins (descending order)
+    players.sort((p1, p2) -> Integer.compare(p2.getWon(), p1.getWon()));
+
+    // Update the leaderboard list view
+    leaderboardListView.getItems().setAll(players);
+}
+    public void updateMatchesListView() {
+    // Clear the current list
+    matchesListView.getItems().clear();
+
+    // Add matches to the list view based on certain criteria
+    for (Match match : matches) {
+        // For example, you might want to display only ACTIVE matches
+        if (match.getStatus() == Match.MatchStatus.ACTIVE) {
+            matchesListView.getItems().add(match);
+        }
     }
+}
+
 
     // Add other methods as needed for handling match results and updating player statuses
 }
+
