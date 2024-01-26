@@ -4,15 +4,29 @@ public class Match {
     private Players playerOne;
     private Players playerTwo;
     private MatchStatus status;
+    private Players winner; // New field to store the winner
 
     public Match(Players playerOne, Players playerTwo) {
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;
         this.status = MatchStatus.CREATED;
+        this.winner = null; // Initialize winner as null
     }
+
 
     public enum MatchStatus {
         CREATED, ACTIVE, COMPLETED
+    }
+    
+    public void setWinner(Players winner) {
+        if (winner.equals(playerOne) || winner.equals(playerTwo)) {
+            this.winner = winner;
+            setStatus(MatchStatus.COMPLETED); // Automatically update status to COMPLETED
+        }
+    }
+    
+    public Players getWinner() {
+        return winner;
     }
 
     // Getters and Setters

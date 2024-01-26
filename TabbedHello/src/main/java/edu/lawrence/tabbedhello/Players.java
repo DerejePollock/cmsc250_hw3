@@ -10,21 +10,19 @@ public class Players {
     private int won;
     private int played;
 
-    // Constructor
     public Players(String name) {
         this.name = name;
         this.won = 0;
         this.played = 0;
     }
 
-    // Increment the count of won and played matches
-    public void wonMatch() {
-        won++;
-        played++;
+    public void incrementWon() {
+        this.won++;
+        this.played++;
     }
 
-    public void lostMatch() {
-        played++;
+    public void incrementPlayed() {
+        this.played++;
     }
 
     // Getters and Setters
@@ -54,6 +52,10 @@ public class Players {
 
     public void addMatch(Match match) {
         matches.add(match);
+    }
+    
+    public void removeMatch(Match match) {
+        matches.remove(match);
     }
 
     // Override toString if needed for ListView display

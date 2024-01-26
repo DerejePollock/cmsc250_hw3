@@ -5,6 +5,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 
 public class PrimaryController {
@@ -14,6 +16,7 @@ public class PrimaryController {
     @FXML private TextField nameText;
     @FXML private ListView<Match> matchesListView; // Assuming you have this in your FXML for active matches
     @FXML private ListView<Players> leaderboardListView; // Assuming you have this in your FXML for leaderboard
+    
 
     public void registerPlayer() {
         String playerName = nameText.getText().trim();
@@ -47,6 +50,40 @@ public class PrimaryController {
             }
         }
         matchesListView.getItems().setAll(activeMatches);
+    }
+    
+    public void initialize() {
+        matchesListView.setOnMouseClicked(event -> {
+            Match selectedMatch = matchesListView.getSelectionModel().getSelectedItem();
+            if (selectedMatch != null && selectedMatch.getStatus() == Match.MatchStatus.ACTIVE) {
+                showWinnerSelectionDialog(selectedMatch);
+            }
+        });
+    }
+    
+    private void showWinnerSelectionDialog(Match match) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Select Winner");
+        alert.setHeaderText("Choose the winner for: " + match);
+
+        ButtonType playerOneButton = new ButtonType(match.getPlayerOne().getName());
+        ButtonType playerTwoButton = new ButtonType(match.getPlayerTwo().getName());
+        alert.getButtonTypes().setAll(playerOneButton, playerTwoButton, ButtonType.CANCEL);
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == playerOneButton) {
+                processMatchResult(match, match.getPlayerOne());
+            } else if (response == playerTwoButton) {
+                processMatchResult(match, match.getPlayerTwo());
+            }
+        });
+    }
+    
+    private void processMatchResult(Match match, Players winner) {
+        match.setStatus(Match.MatchStatus.COMPLETED);
+        winner.incrementGamesWon();
+        updateMatchesListView();
+        updateLeaderboard();
     }
 
     public void updateLeaderboard() {
