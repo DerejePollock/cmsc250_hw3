@@ -8,44 +8,56 @@ import java.util.List;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
-
 public class PrimaryController {
+
     private List<Players> players = new ArrayList<>();
     private List<Match> matches = new ArrayList<>();
 
-    @FXML private TextField nameText;
-    @FXML private ListView<Match> matchesListView; // Assuming you have this in your FXML for active matches
-    @FXML private ListView<Players> leaderboardListView; // Assuming you have this in your FXML for leaderboard
     @FXML
-    
-    private void generateMatches() {
-    // Method implementation
+    private TextField nameText;
+    @FXML
+    private ListView<Match> matchesListView;
+    @FXML
+    private ListView<Players> leaderboardListView;
+
+    @FXML
+
+    public void generateMatches() {
+        for (Match match : matches) {
+            if (match.getStatus() == Match.MatchStatus.CREATED) {
+                Players playerOne = match.getPlayerOne();
+                Players playerTwo = match.getPlayerTwo();
+
+                // Check if both players are not already in an active match
+                if (!playerOne.isInActiveMatch() && !playerTwo.isInActiveMatch()) {
+                    match.setStatus(Match.MatchStatus.ACTIVE);
+                    playerOne.setInActiveMatch(true);
+                    playerTwo.setInActiveMatch(true);
+                }
+            }
+        }
+        updateMatchesListView(); // Refresh the list view
     }
-    
 
     public void registerPlayer() {
         String playerName = nameText.getText().trim();
         if (playerName.isEmpty()) {
-            // Handle the case where the player name is empty
             return;
         }
 
         Players newPlayer = new Players(playerName);
-    players.add(newPlayer);
+        players.add(newPlayer);
 
-    for (Players existingPlayer : players) {
-        if (!existingPlayer.equals(newPlayer)) {
-            Match newMatch = new Match(newPlayer, existingPlayer);
-            newMatch.setStatus(Match.MatchStatus.ACTIVE); // Set the match status to ACTIVE
-            matches.add(newMatch);
-            existingPlayer.addMatch(newMatch);
-            newPlayer.addMatch(newMatch);
+        for (Players existingPlayer : players) {
+            if (!existingPlayer.equals(newPlayer)) {
+                Match newMatch = new Match(newPlayer, existingPlayer);
+                newMatch.setStatus(Match.MatchStatus.CREATED); // Initially set as CREATED
+                matches.add(newMatch);
+            }
         }
-    }
 
-    updateActiveMatchesDisplay();
-    nameText.clear();
-}
+        nameText.clear();
+    }
 
     public void updateActiveMatchesDisplay() {
         List<Match> activeMatches = new ArrayList<>();
@@ -56,7 +68,7 @@ public class PrimaryController {
         }
         matchesListView.getItems().setAll(activeMatches);
     }
-    
+
     public void initialize() {
         matchesListView.setOnMouseClicked(event -> {
             Match selectedMatch = matchesListView.getSelectionModel().getSelectedItem();
@@ -65,8 +77,7 @@ public class PrimaryController {
             }
         });
     }
-    
-    
+
     private void showWinnerSelectionDialog(Match match) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Select Winner");
@@ -84,45 +95,43 @@ public class PrimaryController {
             }
         });
     }
-    
-    
+
     private void processMatchResult(Match match, Players winner) {
-    // Set the match status to COMPLETED
-    match.setStatus(Match.MatchStatus.COMPLETED);
+        // Set the match status to COMPLETED
+        match.setStatus(Match.MatchStatus.COMPLETED);
 
-    // Increment the winner's win count and both players' played count
-    winner.incrementWon();
-    match.getPlayerOne().incrementPlayed();
-    match.getPlayerTwo().incrementPlayed();
+        // Increment the winner's win count and both players' played count
+        winner.incrementWon();
+        match.getPlayerOne().incrementPlayed();
+        match.getPlayerTwo().incrementPlayed();
 
-    // Remove the match from the active matches list
-    matches.removeIf(m -> m.getStatus() == Match.MatchStatus.COMPLETED);
+        // Set both players as not in an active match
+        match.getPlayerOne().setInActiveMatch(false);
+        match.getPlayerTwo().setInActiveMatch(false);
 
-    // Update the ListView and leaderboard
-    updateMatchesListView();
-    updateLeaderboard();
-}
+        // Remove the match from the active matches list
+        matches.removeIf(m -> m.getStatus() == Match.MatchStatus.COMPLETED);
+
+        // Update the ListView and leaderboard
+        updateMatchesListView();
+        updateLeaderboard();
+    }
+
     public void updateLeaderboard() {
-    // Sort players by number of wins (descending order)
-    players.sort((p1, p2) -> Integer.compare(p2.getWon(), p1.getWon()));
+        // Sort players by number of wins (descending order)
+        players.sort((p1, p2) -> Integer.compare(p2.getWon(), p1.getWon()));
 
-    // Update the leaderboard list view
-    leaderboardListView.getItems().setAll(players);
-}
+        // Update the leaderboard list view
+        leaderboardListView.getItems().setAll(players);
+    }
+
     public void updateMatchesListView() {
-    // Clear the current list
-    matchesListView.getItems().clear();
-
-    // Add matches to the list view based on certain criteria
-    for (Match match : matches) {
-        // For example, you might want to display only ACTIVE matches
-        if (match.getStatus() == Match.MatchStatus.ACTIVE) {
-            matchesListView.getItems().add(match);
+        matchesListView.getItems().clear();
+        for (Match match : matches) {
+            if (match.getStatus() == Match.MatchStatus.ACTIVE) {
+                matchesListView.getItems().add(match);
+            }
         }
     }
+    
 }
-
-
-    // Add other methods as needed for handling match results and updating player statuses
-}
-

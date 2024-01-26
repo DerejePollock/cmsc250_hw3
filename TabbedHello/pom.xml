@@ -80,4 +80,5 @@
             </plugin>
         </plugins>
     </build>
+    <name>Tournament Manager Final</name>
 </project>

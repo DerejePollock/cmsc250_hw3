@@ -17,8 +17,7 @@ public class Players {
     }
 
     public void incrementWon() {
-        this.won++;
-        this.played++;
+    this.won++;
     }
 
     public void incrementPlayed() {
@@ -58,7 +57,7 @@ public class Players {
         matches.remove(match);
     }
 
-    // Override toString if needed for ListView display
+    
     @Override
     public String toString() {
         return name + " - Won: " + won + ", Played: " + played;

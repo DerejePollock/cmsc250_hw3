@@ -4,7 +4,7 @@ public class Match {
     private Players playerOne;
     private Players playerTwo;
     private MatchStatus status;
-    private Players winner; // New field to store the winner
+    private Players winner; 
 
     public Match(Players playerOne, Players playerTwo) {
         this.playerOne = playerOne;
@@ -21,7 +21,7 @@ public class Match {
     public void setWinner(Players winner) {
         if (winner.equals(playerOne) || winner.equals(playerTwo)) {
             this.winner = winner;
-            setStatus(MatchStatus.COMPLETED); // Automatically update status to COMPLETED
+            setStatus(MatchStatus.COMPLETED);
         }
     }
     
@@ -46,7 +46,7 @@ public class Match {
         this.status = status;
     }
 
-    // Override toString if needed for ListView display
+    
     @Override
     public String toString() {
         return playerOne.getName() + " ~vs~ " + playerTwo.getName() + " - Status: " + status;
